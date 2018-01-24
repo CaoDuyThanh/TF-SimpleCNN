@@ -4,6 +4,7 @@ from random import shuffle
 
 # Import Models
 from Models.CNNModel import *
+from Models.VisualBackPropModel import *
 
 # Import Utils
 from Utils.MNistDataHelper import *      # Load dataset
@@ -24,6 +25,7 @@ LEARNING_RATE       = 0.003        # Starting learning rate
 DISPLAY_FREQUENCY   = 500;         INFO_DISPLAY = '\r%sLearning rate = %f - Epoch = %d - Iter = %d - Cost = %f'
 SAVE_FREQUENCY      = 2500
 VALIDATE_FREQUENCY  = 2500
+VISUALIZE_FREQUENCY = 5000
 
 START_EPOCH     = 0
 START_ITERATION = 0
@@ -44,9 +46,10 @@ STATE_PATH        = SETTING_PATH + 'SimpleCNN_CurrentState.ckpt'
 BEST_PREC_PATH    = SETTING_PATH + 'SimpleCNN_Prec_Best.ckpt'
 
 #  GLOBAL VARIABLES
-dataset    = None
-CNN_model  = None
-TB_hanlder = None
+dataset      = None
+CNN_model    = None
+Visual_model = None
+TB_hanlder   = None
 
 ########################################################################################################################
 #                                                                                                                      #
@@ -65,8 +68,16 @@ def _load_dataset(_all_path):
 #                                                                                                                      #
 ########################################################################################################################
 def _create_CNN_model():
-    global CNN_model
+    global CNN_model, \
+           Visual_model
     CNN_model = CNNModel()
+    Visual_model = VisualBackPropModel(_feature_layers = [CNN_model.layers['st1_relu'],
+                                                          CNN_model.layers['st2_relu'],
+                                                          CNN_model.layers['st3_relu'],
+                                                          CNN_model.layers['st4_relu'],
+                                                          CNN_model.layers['st5_relu']],
+                                       _kernel_sizes   = [[3, 3], [5, 5], [3, 3], [5, 5], [3, 3]],
+                                       _strides        = [[1, 1], [2, 2], [1, 1], [2, 2], [1, 1]])
 
 ########################################################################################################################
 #                                                                                                                      #
@@ -122,6 +133,19 @@ def _extract_feature(_model,
         feature.append(_result[0])
     feature = numpy.concatenate(tuple(feature), axis = 0)
     return feature
+
+def _scale_linear(_data,
+                 _min,
+                 _max):
+    _min_data = numpy.min(_data)
+    _max_data = numpy.max(_data)
+    return (_data - _min_data) / (_max_data - _min_data) * (_max - _min) + _min
+
+def _scale_log(_data,
+               _min,
+               _max):
+    _data = numpy.log(_data)
+    return _scale_linear(_data, _min, _max)
 
 ########################################################################################################################
 #                                                                                                                      #
@@ -206,6 +230,9 @@ def _train_test_model(_all_path):
     _train_set_y = dataset.train_set_y
     _train_set_x, \
     _train_set_y = _shuffle_data([_train_set_x, _train_set_y])
+
+    _visual_set_x = _train_set_x[:25]
+    _visual_set_y = _train_set_y[:25]
 
     _valid_set_x = dataset.valid_set_x
     _valid_set_y = dataset.valid_set_y
@@ -363,6 +390,21 @@ def _train_test_model(_all_path):
                     _saver.save(sess      = _session,
                                 save_path = _best_prec_path)
                     print ('+ Save best prec model ! Complete !')
+
+            if _iter % VISUALIZE_FREQUENCY == 0:
+                _feature_maps = Visual_model.visual_func(_session = _session,
+                                                         _state   = TRAIN_STATE,
+                                                         _batch_x = _visual_set_x)[0]
+                _feature_maps = _scale_linear(_feature_maps, 0, 255)
+                _origin_set_x = _visual_set_x.reshape((len(_visual_set_x), 28, 28, 1))
+                _origin_set_x = _scale_linear(_origin_set_x, 0, 255)
+                _feature_maps = numpy.concatenate((_feature_maps, _origin_set_x), axis = 1)
+                _feature_maps = numpy.squeeze(_feature_maps)
+                # Add summary
+                TB_hanlder.log_images(_name_scope = 'Train',
+                                      _name       = 'Images',
+                                      _images     = _feature_maps,
+                                      _step       = _iter)
 
     # ===== Load best model =====
     _saver = tf.train.Saver()

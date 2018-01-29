@@ -187,29 +187,6 @@ def _valid_model(_session,
 
     return numpy.mean(_precs)
 
-# def _merge_data(_data):
-#     data = numpy.concatenate(tuple(_data))
-#     return data
-#
-# def _print_close_sample(_model,
-#                         _thres,
-#                         _num_samples):
-#     gen_sample = []
-#     while (True):
-#         _samples, _probs  = _model.gen1_sample_func(VALID_STATE,
-#                                                     VALID_STATE,
-#                                                     64,
-#                                                     numpy.zeros((BATCH_SIZE, 1, 28, 28), dtype = 'float32'))
-#         for _sample, _prob in zip(_samples, _probs):
-#             if _prob <= _thres:
-#                 gen_sample.append(_sample)
-#         if len(gen_sample) >= _num_samples:
-#             break
-#     gen_sample = gen_sample[:_num_samples]
-#     gen_sample = numpy.concatenate(tuple(gen_sample), axis = 0)
-#     gen_sample = gen_sample.reshape((_num_samples, 1, 28, 28))
-#     return gen_sample
-
 ########################################################################################################################
 #                                                                                                                      #
 #    TRAIN FEATURE EXTRACTION MODEL..........                                                                          #
@@ -392,6 +369,7 @@ def _train_test_model(_all_path):
                     print ('+ Save best prec model ! Complete !')
 
             if _iter % VISUALIZE_FREQUENCY == 0:
+                print ('\n------------------- Visualize Model -------------------')
                 _feature_maps = Visual_model.visual_func(_session = _session,
                                                          _state   = TRAIN_STATE,
                                                          _batch_x = _visual_set_x)[0]
@@ -405,6 +383,7 @@ def _train_test_model(_all_path):
                                       _name       = 'Images',
                                       _images     = _feature_maps,
                                       _step       = _iter)
+                print ('\n------------------- Visualize Model (Done) ------------')
 
     # ===== Load best model =====
     _saver = tf.train.Saver()

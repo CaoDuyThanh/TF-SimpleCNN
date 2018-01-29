@@ -20,142 +20,143 @@ class CNNModel():
         self.layers['input'] = tf.reshape(self.input, [-1, 28, 28, 1])
 
         # ----- Stack 1 -----
-        with tf.variable_scope('stack1'):
-            # --- Convolution ---
-            self.layers['st1_conv'] = tf.layers.conv2d(inputs      = self.layers['input'],
-                                                       filters     = 16,
-                                                       kernel_size = [3, 3],
-                                                       strides     = [1, 1],
-                                                       padding     = 'same',
-                                                       activation  = None,
-                                                       name        = 'conv')
+        with tf.variable_scope('simple_net'):
+            with tf.variable_scope('stack1'):
+                # --- Convolution ---
+                self.layers['st1_conv'] = tf.layers.conv2d(inputs      = self.layers['input'],
+                                                           filters     = 16,
+                                                           kernel_size = [3, 3],
+                                                           strides     = [1, 1],
+                                                           padding     = 'same',
+                                                           activation  = None,
+                                                           name        = 'conv')
 
-            # --- Batch normalization ---
-            self.layers['st1_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st1_conv'],
-                                                                         center   = True,
-                                                                         scale    = True,
-                                                                         name     = 'batchnorm',
-                                                                         training = self.state)
+                # --- Batch normalization ---
+                self.layers['st1_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st1_conv'],
+                                                                             center   = True,
+                                                                             scale    = True,
+                                                                             name     = 'batchnorm',
+                                                                             training = self.state)
 
-            # --- Relu ---
-            self.layers['st1_relu'] = tf.nn.relu(features = self.layers['st1_batchnorm'],
-                                                 name     = 'relu')
+                # --- Relu ---
+                self.layers['st1_relu'] = tf.nn.relu(features = self.layers['st1_batchnorm'],
+                                                     name     = 'relu')
 
-        # ----- Stack 2 -----
-        with tf.variable_scope('stack2'):
-            # --- Convolution ---
-            self.layers['st2_conv'] = tf.layers.conv2d(inputs      = self.layers['st1_relu'],
-                                                       filters     = 32,
-                                                       kernel_size = [5, 5],
-                                                       strides     = [2, 2],
-                                                       padding     = 'same',
-                                                       activation  = None,
-                                                       name        = 'conv')
+            # ----- Stack 2 -----
+            with tf.variable_scope('stack2'):
+                # --- Convolution ---
+                self.layers['st2_conv'] = tf.layers.conv2d(inputs      = self.layers['st1_relu'],
+                                                           filters     = 32,
+                                                           kernel_size = [5, 5],
+                                                           strides     = [2, 2],
+                                                           padding     = 'same',
+                                                           activation  = None,
+                                                           name        = 'conv')
 
-            # --- Batch normalization ---
-            self.layers['st2_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st2_conv'],
-                                                                         center   = True,
-                                                                         scale    = True,
-                                                                         name     = 'batchnorm',
-                                                                         training = self.state)
+                # --- Batch normalization ---
+                self.layers['st2_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st2_conv'],
+                                                                             center   = True,
+                                                                             scale    = True,
+                                                                             name     = 'batchnorm',
+                                                                             training = self.state)
 
-            # --- Relu ---
-            self.layers['st2_relu']      = tf.nn.relu(features = self.layers['st2_batchnorm'],
-                                                      name     = 'relu')
+                # --- Relu ---
+                self.layers['st2_relu']      = tf.nn.relu(features = self.layers['st2_batchnorm'],
+                                                          name     = 'relu')
 
-        # ----- Stack 3 -----
-        with tf.variable_scope('stack3'):
-            # --- Convolution ---
-            self.layers['st3_conv'] = tf.layers.conv2d(inputs      = self.layers['st2_relu'],
-                                                       filters     = 48,
-                                                       kernel_size = [3, 3],
-                                                       strides     = [1, 1],
-                                                       padding     = 'same',
-                                                       activation  = None,
-                                                       name        = 'conv')
+            # ----- Stack 3 -----
+            with tf.variable_scope('stack3'):
+                # --- Convolution ---
+                self.layers['st3_conv'] = tf.layers.conv2d(inputs      = self.layers['st2_relu'],
+                                                           filters     = 48,
+                                                           kernel_size = [3, 3],
+                                                           strides     = [1, 1],
+                                                           padding     = 'same',
+                                                           activation  = None,
+                                                           name        = 'conv')
 
-            # --- Batch normalization ---
-            self.layers['st3_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st3_conv'],
-                                                                         center   = True,
-                                                                         scale    = True,
-                                                                         name     = 'batchnorm',
-                                                                         training = self.state)
+                # --- Batch normalization ---
+                self.layers['st3_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st3_conv'],
+                                                                             center   = True,
+                                                                             scale    = True,
+                                                                             name     = 'batchnorm',
+                                                                             training = self.state)
 
-            # --- Relu ---
-            self.layers['st3_relu']      = tf.nn.relu(features = self.layers['st3_batchnorm'],
-                                                      name     = 'relu')
+                # --- Relu ---
+                self.layers['st3_relu']      = tf.nn.relu(features = self.layers['st3_batchnorm'],
+                                                          name     = 'relu')
 
-        # ----- Stack 4 -----
-        with tf.variable_scope('stack4'):
-            # --- Convolution ---
-            self.layers['st4_conv'] = tf.layers.conv2d(inputs      = self.layers['st3_relu'],
-                                                       filters     = 64,
-                                                       kernel_size = [5, 5],
-                                                       strides     = [2, 2],
-                                                       padding     = 'same',
-                                                       activation  = None,
-                                                       name        = 'conv')
+            # ----- Stack 4 -----
+            with tf.variable_scope('stack4'):
+                # --- Convolution ---
+                self.layers['st4_conv'] = tf.layers.conv2d(inputs      = self.layers['st3_relu'],
+                                                           filters     = 64,
+                                                           kernel_size = [5, 5],
+                                                           strides     = [2, 2],
+                                                           padding     = 'same',
+                                                           activation  = None,
+                                                           name        = 'conv')
 
-            # --- Batch normalization ---
-            self.layers['st4_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st4_conv'],
-                                                                         center   = True,
-                                                                         scale    = True,
-                                                                         name     = 'batchnorm',
-                                                                         training = self.state)
+                # --- Batch normalization ---
+                self.layers['st4_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st4_conv'],
+                                                                             center   = True,
+                                                                             scale    = True,
+                                                                             name     = 'batchnorm',
+                                                                             training = self.state)
 
-            # --- Relu ---
-            self.layers['st4_relu']      = tf.nn.relu(features = self.layers['st4_batchnorm'],
-                                                      name     = 'relu')
+                # --- Relu ---
+                self.layers['st4_relu']      = tf.nn.relu(features = self.layers['st4_batchnorm'],
+                                                          name     = 'relu')
 
-        # ----- Stack 5 -----
-        with tf.variable_scope('stack5'):
-            # --- Convolution ---
-            self.layers['st5_conv'] = tf.layers.conv2d(inputs      = self.layers['st4_relu'],
-                                                       filters     = 64,
-                                                       kernel_size = [3, 3],
-                                                       strides     = [1, 1],
-                                                       padding     = 'same',
-                                                       activation  = None,
-                                                       name        = 'conv')
+            # ----- Stack 5 -----
+            with tf.variable_scope('stack5'):
+                # --- Convolution ---
+                self.layers['st5_conv'] = tf.layers.conv2d(inputs      = self.layers['st4_relu'],
+                                                           filters     = 64,
+                                                           kernel_size = [3, 3],
+                                                           strides     = [1, 1],
+                                                           padding     = 'same',
+                                                           activation  = None,
+                                                           name        = 'conv')
 
-            # --- Batch normalization ---
-            self.layers['st5_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st5_conv'],
-                                                                         center   = True,
-                                                                         scale    = True,
-                                                                         name     = 'batchnorm',
-                                                                         training = self.state)
+                # --- Batch normalization ---
+                self.layers['st5_batchnorm'] = tf.layers.batch_normalization(inputs   = self.layers['st5_conv'],
+                                                                             center   = True,
+                                                                             scale    = True,
+                                                                             name     = 'batchnorm',
+                                                                             training = self.state)
 
-            # --- Relu ---
-            self.layers['st5_relu']      = tf.nn.relu(features = self.layers['st5_batchnorm'],
-                                                      name     = 'relu')
+                # --- Relu ---
+                self.layers['st5_relu']      = tf.nn.relu(features = self.layers['st5_batchnorm'],
+                                                          name     = 'relu')
 
-        # ----- Stack 6 -----
-        with tf.variable_scope('stack6'):
-            # --- Reshape ---
-            self.layers['st6_reshape'] = tf.reshape(self.layers['st5_relu'], [-1, 7 * 7 * 64])
+            # ----- Stack 6 -----
+            with tf.variable_scope('stack6'):
+                # --- Reshape ---
+                self.layers['st6_reshape'] = tf.reshape(self.layers['st5_relu'], [-1, 7 * 7 * 64])
 
-            # --- Fully Connected Layer ---
-            self.layers['st6_fc'] = tf.layers.dense(inputs     = self.layers['st6_reshape'],
-                                                    units      = 128,
-                                                    activation = tf.nn.relu)
+                # --- Fully Connected Layer ---
+                self.layers['st6_fc'] = tf.layers.dense(inputs     = self.layers['st6_reshape'],
+                                                        units      = 128,
+                                                        activation = tf.nn.relu)
 
-            # --- Dropout Layer ---
-            self.layers['st6_dropout'] = tf.layers.dropout(inputs   = self.layers['st6_fc'],
-                                                           rate     = 0.5,
-                                                           training = self.state)
+                # --- Dropout Layer ---
+                self.layers['st6_dropout'] = tf.layers.dropout(inputs   = self.layers['st6_fc'],
+                                                               rate     = 0.5,
+                                                               training = self.state)
 
-        # ----- Stack 4 -----
-        with tf.variable_scope('stack7'):
-            # --- Fully Connected Layer ---
-            self.layers['st7_fc'] = tf.layers.dense(inputs = self.layers['st6_dropout'],
-                                                    units  = 10)
+            # ----- Stack 4 -----
+            with tf.variable_scope('stack7'):
+                # --- Fully Connected Layer ---
+                self.layers['st7_fc'] = tf.layers.dense(inputs = self.layers['st6_dropout'],
+                                                        units  = 10)
 
-            self.layers['st7_prob'] = tf.nn.softmax(logits = self.layers['st7_fc'],
-                                                    name   = 'softmax')
+                self.layers['st7_prob'] = tf.nn.softmax(logits = self.layers['st7_fc'],
+                                                        name   = 'softmax')
 
-            self.layers['st7_pred'] = tf.argmax(input       = self.layers['st7_fc'],
-                                                axis        = 1,
-                                                output_type = tf.int32)
+                self.layers['st7_pred'] = tf.argmax(input       = self.layers['st7_fc'],
+                                                    axis        = 1,
+                                                    output_type = tf.int32)
 
         # ----- Loss function -----
         # --- Train ---
@@ -164,13 +165,7 @@ class CNNModel():
                                             )
                                      )
         _adam_opti = tf.train.AdamOptimizer(learning_rate = self.learning_rate)
-        _params    = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack1') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack2') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack3') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack4') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack5') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack6') + \
-                     tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'stack7')
+        _params    = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'simple_net')
         _grads     = tf.gradients(self.loss, _params)
 
         _update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
